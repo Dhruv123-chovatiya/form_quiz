@@ -1,0 +1,197 @@
+import React, { useState } from 'react';
+
+const QuestionComponent = () => {
+    const [questions, setQuestions] = useState([]);
+    const [newQuestion, setNewQuestion] = useState({
+        question: {
+            selectedOption: '',
+            text: '',
+            type: 'multipleChoice',
+            shortAnswerResponse: '',
+        },
+        option: [],
+    });
+
+    const addQuestion = () => {
+        setQuestions([...questions, { ...newQuestion }]);
+        setNewQuestion({
+            question: {
+                selectedOption: '',
+                text: '',
+                type: 'multipleChoice',
+                shortAnswerResponse: '',
+            },
+            option: [],
+        });
+    };
+
+    const removeQuestion = (index) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions.splice(index, 1);
+        setQuestions(updatedQuestions);
+    };
+
+    const onQuestionChange = (index, value) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[index].question.text = value;
+        setQuestions(updatedQuestions);
+    };
+
+    const onTypeChange = (index, value) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[index].question.type = value;
+        setQuestions(updatedQuestions);
+    };
+
+    const onRadioButtonChange = (questionIndex, optionIndex, value) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[questionIndex].option[optionIndex].text = value;
+        setQuestions(updatedQuestions);
+    };
+
+    const onCheckboxChange = (questionIndex, optionIndex) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[questionIndex].option[optionIndex].selected = !updatedQuestions[questionIndex].option[optionIndex].selected;
+        setQuestions(updatedQuestions);
+    };
+
+    const addOption = (questionIndex) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[questionIndex].option.push({ text: '', selected: false });
+        setQuestions(updatedQuestions);
+    };
+
+    const removeOption = (questionIndex, optionIndex) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[questionIndex].option.splice(optionIndex, 1);
+        setQuestions(updatedQuestions);
+    };
+
+    const saveQuestions = () => {
+        // Perform logic to save questions
+        console.log('Saved questions:', questions);
+    };
+
+    const onShortAnswerChange = (index, value) => {
+        const updatedQuestions = [...questions];
+        updatedQuestions[index].question.shortAnswerResponse = value;
+        setQuestions(updatedQuestions);
+    };
+
+
+    return (
+        <div className="mt-5 ms-5">
+            <button onClick={addQuestion} className="icon1" title="Add new Question">
+                Add Question
+            </button>
+
+            {questions.map((question, index) => (
+                <div key={index} className="m-2">
+                    <div className="flex justify-content-center">
+                        <div className="card">
+                            <div style={{ width: '890px' }}>
+                                <button onClick={() => removeQuestion(index)} className="m-2 icon1" style={{ color: 'red' }} title="Delete This Question">
+                                    Remove Question
+                                </button>
+
+                                <div className="card1">
+                                    <div className="m-2">
+                                        <label htmlFor={`question_${index}`}>Question:</label>
+                                        <input
+                                            type="text"
+                                            id={`question_${index}`}
+                                            value={question.question.text}
+                                            className="ms-5"
+                                            onChange={(e) => onQuestionChange(index, e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="m-2">
+                                        <label htmlFor={`question-type_${index}`} style={{ display: 'inline-block' }}>
+                                            Question Type:
+                                        </label>
+                                        <select
+                                            id={`question-type_${index}`}
+                                            value={question.question.type}
+                                            onChange={(e) => onTypeChange(index, e.target.value)}
+                                            className="form-select ms-2"
+                                            required
+                                            style={{ display: 'inline-block' }}
+                                        >
+                                            <option value="multipleChoice">Multiple Choice</option>
+                                            <option value="checkbox">Checkbox</option>
+                                            <option value="shortAnswer">Short Answer</option>
+                                        </select>
+                                    </div>
+
+                                    {question.question.type === 'multipleChoice' && (
+                                        <div className="m-2">
+                                            {question.option.map((option, optionIndex) => (
+                                                <div key={optionIndex} className="m-2">
+                                                    <input
+                                                        type="text"
+                                                        value={option.text}
+                                                        onChange={(e) => onRadioButtonChange(index, optionIndex, e.target.value)}
+                                                        className="ms-3"
+                                                    />
+                                                    <button onClick={() => removeOption(index, optionIndex)} className="m-2" style={{ color: 'red' }}>
+                                                        Remove Option
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button onClick={() => addOption(index)} className="m-2" style={{ color: 'grey' }}>
+                                                Add Option
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {question.question.type === 'checkbox' && (
+                                        <div className="m-2">
+                                            {question.option.map((option, optionIndex) => (
+                                                <div key={optionIndex} className="m-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={option.selected}
+                                                        onChange={() => onCheckboxChange(index, optionIndex)}
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={option.text}
+                                                        onChange={(e) => onRadioButtonChange(index, optionIndex, e.target.value)}
+                                                        className="ms-3"
+                                                    />
+                                                    <button onClick={() => removeOption(index, optionIndex)} className="m-2" style={{ color: 'red' }}>
+                                                        Remove Option
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button onClick={() => addOption(index)} className="m-2" style={{ color: 'grey' }}>
+                                                Add Option
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {question.question.type === 'shortAnswer' && (
+                                        <div className="m-2 text1">
+                                            <textarea
+                                                value={question.question.shortAnswerResponse}
+                                                onChange={(e) => onShortAnswerChange(index, e.target.value)}
+                                            ></textarea>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))}
+
+            <div className="text-center">
+                <button onClick={saveQuestions} className="p-5 mt-3">
+                    Save
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default QuestionComponent;
